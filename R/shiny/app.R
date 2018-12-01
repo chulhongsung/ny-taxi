@@ -157,7 +157,7 @@ server <- function(input, output, session)
       fare <- KernelKnn(data = tmp_train[,2:5], TEST_data = newdata, y = tmp_train$fare, k = 5, weights_function = 'gaussian', regression = TRUE)
      
       infoBox(
-        "Fare", paste0(round(fare,2),'$',' + 15% tax = ',round(round(fare,2) + round(fare,2)*(0.15), 2), '$'), color = 'blue', icon = icon('dollar'), fill = TRUE
+        "Fare", paste0(round(fare,2),'$',' + 15% tip = ',round(round(fare,2) + round(fare,2)*(0.15), 2), '$'), color = 'blue', icon = icon('dollar'), fill = TRUE
       )} 
   }
   )
