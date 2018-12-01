@@ -8,7 +8,7 @@
 - repository for a data mining class project
 
 
-- Data : Kaggle New York City Taxi Fare Prediction ['Kaggle'](https://www.kaggle.com/c/new-york-city-taxi-fare-prediction)
+- Data : Kaggle New York City Taxi Fare Prediction, ['Kaggle'](https://www.kaggle.com/c/new-york-city-taxi-fare-prediction)
 
 
 - Used Kernel Knn
