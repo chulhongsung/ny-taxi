@@ -3,7 +3,7 @@
 <img width = "450" heigth = "400" src = 
 https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-92c2-149d5f04c2af.png>
 
-### Description 
+### 1. Description 
 --------------------------
 - Repository for a data mining class project
 
@@ -16,6 +16,6 @@ https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-9
 --------------------------
 
 
-### R Shiny app
+### 2. R Shiny app
 
 <img width = "600" heigth = "600" src = https://user-images.githubusercontent.com/37679460/49336893-a1aa3000-f64d-11e8-923a-f6ebebc156f8.gif>
