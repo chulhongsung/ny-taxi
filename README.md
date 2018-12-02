@@ -11,7 +11,7 @@ https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-9
 - Data : Kaggle New York City Taxi Fare Prediction ([Link](https://www.kaggle.com/c/new-york-city-taxi-fare-prediction))
 
 
-- Used ~Kernel Knn~ **XGboost**
+- Used ~Kernel Knn~ **'XGboost'**
 
 --------------------------
 
