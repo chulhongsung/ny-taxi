@@ -18,4 +18,4 @@ https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-9
 
 ### R Shiny app
 
-<img width = "600" heigth = "600" src = https://user-images.githubusercontent.com/37679460/49331379-1f832280-f5df-11e8-99a4-2fcb8889db57.gif>
+<img width = "600" heigth = "600" src = https://user-images.githubusercontent.com/37679460/49336893-a1aa3000-f64d-11e8-923a-f6ebebc156f8.gif>
