@@ -1,12 +1,10 @@
-setwd("/home/hsc0526/datamining")
-
 require('shiny')
 require('shinydashboard')
 require('leaflet')
 require('dplyr')
-require('FNN')
+require('xgboost') 
 
-load('train.df.RData')
+load('xgb.fit.RData') ### GitHub/ny-taxi/R/fit/xgb.fit.RData
 
 ui <- dashboardPage(
   skin = 'yellow', 
@@ -44,17 +42,16 @@ ui <- dashboardPage(
       tabItem(tabName = "FR",
               fluidRow(
                 column(width = 12,
-                       box(width = NULL, title = 'Newyork Map', status = "success", solidHeader = TRUE,
+                       box(width = NULL, title = 'Newyork Map', status = "primary", solidHeader = TRUE,
                            leafletOutput("map2", height = 600))
                 )),
               fluidRow(
                 column(width = 5,
-                       sliderInput('fare', "Available fare", min = 3, max = 50, value = 20, round = TRUE))
+                       sliderInput('fare', "Available fare", min = 3, max = 30, value = 3, round = TRUE)),
+                textOutput("currentTime2")
               ))
     )
     )
-  
-  
     )
 
 
@@ -71,11 +68,34 @@ server <- function(input, output, session)
       setView(lng = -74.00, lat = 40.71, zoom = 15)
   })
   
+  icons1 <- awesomeIcons(
+    icon = 'taxi',
+    iconColor = 'black',
+    library = 'fa',
+    markerColor = 'green'
+  )
+  
+  icons2 <- awesomeIcons(
+    icon = 'taxi',
+    iconColor = 'black',
+    library = 'fa',
+    markerColor = 'yellow'
+  )
+  
   RV <- reactiveValues(Clicks = list())
   observeEvent(input$map_click, {
     click <- input$map_click
     RV$Clicks <- bind_rows(RV$Clicks, click)
-    proxy <- leafletProxy("map") %>% clearMarkers() %>% addMarkers(lng = click$lng, lat = click$lat )
+    if(nrow(RV$Clicks) %% 2 == 1)
+    {
+      proxy <- leafletProxy("map") %>% clearMarkers() %>% addAwesomeMarkers(lng = click$lng, lat = click$lat, icon = icons1, popup  = paste(sep = '<br/>', 'Start',
+                                                                                                                                            paste0('lng: ', round(click$lng, 4)),
+                                                                                                                                            paste0('lat: ', round(click$lat,4))), popupOptions = popupOptions(keepInView = T))
+    } else if(nrow(RV$Clicks) %% 2 == 0) {
+      proxy <- leafletProxy("map") %>% addAwesomeMarkers(lng = click$lng, lat = click$lat, icon = icons2, popup  = paste(sep = '<br/>', 'Destination',
+                                                                                                                         paste0('lng: ', round(click$lng,4)),
+                                                                                                                         paste0('lat: ', round(click$lat,4))), popupOptions = popupOptions(keepInView = T))
+    } 
     
   })
   
@@ -84,19 +104,19 @@ server <- function(input, output, session)
     {
       infoBox(
         
-        "Start Lon", "Click your location", icon = icon("map"), color = 'olive'
+        "Start Lon", "Click your location", icon = icon("map"), color = 'olive', fill = TRUE
         
       )} else if(nrow(RV$Clicks) %% 2  == 1){
         
         infoBox(
           
-          "Start Lon", round(RV$Clicks$lng[nrow(RV$Clicks)],4), icon = icon("map"), color = 'olive'
+          "Start Lon", round(RV$Clicks$lng[nrow(RV$Clicks)],4), icon = icon("map"), color = 'olive', fill = TRUE
         )
       } else { 
         
         infoBox(
           
-          "Desti Lon", round(RV$Clicks$lng[nrow(RV$Clicks)],4), icon = icon("map"), color = 'purple'
+          "Desti Lon", round(RV$Clicks$lng[nrow(RV$Clicks)],4), icon = icon("map"), color = 'purple', fill = TRUE
         )
         
       }
@@ -106,19 +126,19 @@ server <- function(input, output, session)
     {
       infoBox(
         
-        "Start Lat", "Click your location", icon = icon("map"), color = 'olive'
+        "Start Lat", "Click your location", icon = icon("map"), color = 'olive', fill = TRUE
         
       )} else if(nrow(RV$Clicks) %% 2  == 1){
         
         infoBox(
           
-          "Start Lat", round(RV$Clicks$lat[nrow(RV$Clicks)],4), icon = icon("map"), color = 'olive'
+          "Start Lat", round(RV$Clicks$lat[nrow(RV$Clicks)],4), icon = icon("map"), color = 'olive', fill = TRUE
         )
       } else { 
         
         infoBox(
           
-          "Desti Lat", round(RV$Clicks$lat[nrow(RV$Clicks)],4), icon = icon("map"), color = 'purple'
+          "Desti Lat", round(RV$Clicks$lat[nrow(RV$Clicks)],4), icon = icon("map"), color = 'purple', fill = TRUE
         )
         
       }
@@ -137,25 +157,12 @@ server <- function(input, output, session)
       }
     else {
       newdata <- data.frame(p_lon = RV$Clicks[nrow(RV$Clicks)-1,]$lng, p_lat = RV$Clicks[nrow(RV$Clicks)-1,]$lat,
-                            d_lon = RV$Clicks[nrow(RV$Clicks),]$lng, d_lat = RV$Clicks[nrow(RV$Clicks),]$lat)
-      h <- as.numeric(substr(Sys.time(), 12, 13))
+                            d_lon = RV$Clicks[nrow(RV$Clicks),]$lng, d_lat = RV$Clicks[nrow(RV$Clicks),]$lat, month = factor('01', levels = c('01', '02', '03', '04', '05', '06')))
       
-      train <- train.df %>% filter(hour == h)
+      newdata <- model.matrix(~., newdata)
       
-      set.seed(1)
+      fare <- predict(xgb.fit, newdata)
       
-      cl <- kmeans(train[,2:3], centers = 100)
-      
-      cluster <- cl$cluster
-      
-      train <- cbind(train, cluster)
-      
-      cluster2 <- knn(train = train[,2:3], test = newdata[,1:2], cl = train$cluster, k = 3)
-      
-      tmp_train <- train %>% filter(cluster == cluster2)
-      
-      fare <- KernelKnn(data = tmp_train[,2:5], TEST_data = newdata, y = tmp_train$fare, k = 5, weights_function = 'gaussian', regression = TRUE)
-     
       infoBox(
         "Fare", paste0(round(fare,2),'$',' + 15% tip = ',round(round(fare,2) + round(fare,2)*(0.15), 2), '$'), color = 'blue', icon = icon('dollar'), fill = TRUE
       )} 
@@ -176,6 +183,12 @@ server <- function(input, output, session)
       addTiles()%>%
       setView(lng = -74.00, lat = 40.71, zoom = 15)
   })
+  
+  output$currentTime2 <- renderText({
+    invalidateLater(1000, session)
+    paste(Sys.time())
+  })
+  
   
   RV2 <- reactiveValues(Clicks = list())
   observeEvent(input$map2_click, {
