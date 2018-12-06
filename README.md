@@ -1,4 +1,4 @@
-# New York City Taxi Fare ~(unfinished)~
+# New York City Taxi Fare
 
 <img width = "450" heigth = "400" src = 
 https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-92c2-149d5f04c2af.png>
