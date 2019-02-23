@@ -1,4 +1,5 @@
 # New York City Taxi Fare
+<a href="https://www.repostatus.org/#active"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." /></a>
 
 <img width = "450" heigth = "400" src = 
 https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-92c2-149d5f04c2af.png>
