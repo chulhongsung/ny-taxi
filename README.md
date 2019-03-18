@@ -9,7 +9,7 @@ https://user-images.githubusercontent.com/37679460/49331461-8ce38300-f5e0-11e8-9
 - Repository for a data mining class project
 
 
-- Data : Kaggle New York City Taxi Fare Prediction ([Link](https://www.kaggle.com/c/new-york-city-taxi-fare-prediction))
+- Data : Kaggle New York City Taxi Fare Prediction ([here](https://www.kaggle.com/c/new-york-city-taxi-fare-prediction))
 
 
 - Use **'Kernel Knn' + 'XGboost'**
